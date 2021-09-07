@@ -23,7 +23,7 @@ myFunction <- function(trafficMatrix, carInfo, packageMatrix) {
   } else {
     goal <- packageMatrix[carInfo$load, c(3,4)]
   }
-  
+  print(cat("goal when born", goal))
   # How do we get there?
   carInfo$nextMove <- nextMove(trafficMatrix,
                                carInfo,
@@ -59,34 +59,48 @@ nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
     
     expand = frontier[[best_index]]
     frontier = frontier[-best_index] # Pop best frontier
+    print("expand:")
+    print(expand)
+    print("frontier after sapply:")
+    print(frontier)
     
     if (c(expand$x, expand$y) == goal) {
-      #print("return value nextMove:" + toString(expand$p[1]))
+      print(cat("goal when return:", goal))
+      print(c(expand$x, expand$y))
+      print(cat("returned value:", expand$p[1]))
       return(expand$p[1])
     } else {
-      if (nrow(trafficMatrix$vroads) < expand$y){
+      print("first if statement")
+      print(nrow(trafficMatrix$vroads) < expand$y)
+      if (nrow(trafficMatrix$vroads) >= expand$y){
+        print("up")
         up <- list(x=expand$x, y=expand$y+1, f=trafficMatrix$vroads[expand$x,expand$y]+expand$f, 
                    h=man_dist(c(expand$x,expand$y+1), goal), p=append(expand$p, 8))
-        frontier = append(frontier, up)
+        frontier = append(frontier, list(up))
       }
       
       if (expand$y != 1) {
+        print("down")
         down <- list(x=expand$x, y=expand$y-1, f=trafficMatrix$vroads[expand$x,expand$y-1]+expand$f, 
                      h=man_dist(c(expand$x,expand$y-1), goal), p=append(expand$p, 2))
-        frontier = append(frontier, down)
+        frontier = append(frontier, list(down))
       }
       
       if (expand$x != 1) {
+        print("left")
         left <- list(x=expand$x-1, y=expand$y, f=trafficMatrix$hroads[expand$x-1,expand$y]+expand$f, 
                      h=man_dist(c(expand$x-1,expand$y), goal), p=append(expand$p, 4))
-        frontier = append(frontier, left)
+        frontier = append(frontier, list(left))
       }
       
-      if (ncol(trafficMatrix$hroads) < expand$x) {
+      if (ncol(trafficMatrix$hroads) >= expand$x) {
+        print("right")
         right <- list(x=expand$x+1, y=expand$y, f=trafficMatrix$hroads[expand$x,expand$y]+expand$f, 
                       h=man_dist(c(expand$x+1,expand$y), goal), p=append(expand$p, 6))
-        frontier = append(frontier, right)
+        frontier = append(frontier, list(right))
       }
+      print("frontier after added directions:")
+      print(frontier)
     }
   }
   #while fronties is not empty
