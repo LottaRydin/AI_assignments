@@ -29,6 +29,7 @@ myFunction <- function(trafficMatrix, carInfo, packageMatrix) {
                                carInfo,
                                packageMatrix, 
                                goal)
+  #print("------------------STEP----------------")
   return(carInfo)
 }
 
@@ -42,7 +43,7 @@ nextPickup <- function(trafficMatrix, carInfo, packageMatrix) {
 
 man_dist <- function(car_pos, goal_pos) {
   dis = abs((car_pos[[1]]-goal_pos[[1]])) + abs((car_pos[[2]]-goal_pos[[2]]))
-  return(dis)
+  return(dis*3)
 }
 
 # Find the move to get to carInfo$mem$goal
@@ -52,10 +53,25 @@ nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
   frontier <- list(first_front)
   expand <- list()
   
+  if (carInfo$x == goal[1] & carInfo$y == goal[2]){
+    # print("same spot!!")
+    return(5)
+  }
+  
+  
   while (length(frontier) != 0){
-    #print("nextMove while")
+    print(length(frontier))
+    # if (length(frontier)>1000){
+    #   print(cat("carinfo: ", c(carInfo$x,carInfo$y)))
+    #   print(cat("goal: ", goal))
+    #   print(cat("expanded coordinats:", c(expand$x,expand$y)))
+    # }
+    # print("nextMove while")
     path_vals = sapply(frontier, function(i) i[[3]]+i[[4]])
-    best_index = which.min(path_vals) # find index of best frontier
+    #best_index = which.min(path_vals) # find index of best frontier
+    #best_index = rev(which(path_vals == min(path_vals)))[1]
+    heu_vals = sapply(frontier, function(i) i[[4]])
+    best_index = which.min(heu_vals[which(path_vals == min(path_vals))])
     
     expand = frontier[[best_index]]
     frontier = frontier[-best_index] # Pop best frontier
