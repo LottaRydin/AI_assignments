@@ -19,7 +19,7 @@ myFunction <- function(trafficMatrix, carInfo, packageMatrix) {
     goal <- nextPickup(trafficMatrix, 
                                    carInfo, 
                                    packageMatrix)
-    print(goal)
+    #print(goal)
   } else {
     goal <- packageMatrix[carInfo$load, c(3,4)]
   }
