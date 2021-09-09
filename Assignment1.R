@@ -62,7 +62,7 @@ nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
   
   
   while (length(frontier) != 0){
-    #print(length(frontier))
+    print(cat('lenght frontier: ',length(frontier)))
     # if (length(frontier)>1000){
     #   print(cat("carinfo: ", c(carInfo$x,carInfo$y)))
     #   print(cat("goal: ", goal))
@@ -98,33 +98,114 @@ nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
       # print("vroads:")
       # print(trafficMatrix$vroads)
       if (ncol(trafficMatrix$vroads) >= expand$y){
-        # print("up")
+         #print("up")
         # print(cat("nrows vroads:", nrow(trafficMatrix$vroads)))
         # print(cat("x an y values for vroads", expand$x, expand$y))
         up <- list(x=expand$x, y=expand$y+1, f=trafficMatrix$vroads[expand$x,expand$y]+expand$f, 
                    h=man_dist(c(expand$x,expand$y+1), goal)*road_con, p=append(expand$p, 8))
-        frontier = append(frontier, list(up))
+        if (length(frontier) != 0) {
+          added = 0
+          for (i in 1:length(frontier)) {
+            if (up$x == frontier[[i]]$x & up$y == frontier[[i]]$y) {
+              if (up$f+up$h < frontier[[i]]$f+frontier[[i]]$h) {
+                frontier[[i]] = up
+                added = 1
+               # print('replace up')
+                break
+              }
+            } 
+          } 
+          if (added == 0) {
+            frontier = append(frontier, list(up))
+            #print('append up1')
+          }
+        } else {
+          frontier = append(frontier, list(up))
+          #print('append up2')
+        }
+        #frontier = append(frontier, list(up))
       }
       
       if (expand$y != 1) {
         #print("down")
         down <- list(x=expand$x, y=expand$y-1, f=trafficMatrix$vroads[expand$x,expand$y-1]+expand$f, 
                      h=man_dist(c(expand$x,expand$y-1), goal)*road_con, p=append(expand$p, 2))
-        frontier = append(frontier, list(down))
+        if (length(frontier) != 0) {
+          added = 0
+          for (i in 1:length(frontier)) {
+            if (down$x == frontier[[i]]$x & down$y == frontier[[i]]$y) {
+              if (down$f+down$h < frontier[[i]]$f+frontier[[i]]$h) {
+                frontier[[i]] = down
+                added = 1
+                #print('replace down')
+                break
+              }
+            }
+          }
+          if (added == 0) {
+            frontier = append(frontier, list(down))
+            #print('append down1')
+          }
+        } else {
+          frontier = append(frontier, list(down))
+          #print('append down2')
+        }
+          
+        #frontier = append(frontier, list(down))
       }
       
       if (expand$x != 1) {
         #print("left")
         left <- list(x=expand$x-1, y=expand$y, f=trafficMatrix$hroads[expand$x-1,expand$y]+expand$f, 
                      h=man_dist(c(expand$x-1,expand$y), goal)*road_con, p=append(expand$p, 4))
-        frontier = append(frontier, list(left))
+        if (length(frontier) != 0) {
+          added = 0
+          for (i in 1:length(frontier)) {
+            if (left$x == frontier[[i]]$x & left$y == frontier[[i]]$y) {
+              if (left$f+left$h < frontier[[i]]$f+frontier[[i]]$h) {
+                frontier[[i]] = left
+                added = 1
+                #print('replace left')
+                break
+              }
+            }
+          }
+          if (added == 0) {
+            frontier = append(frontier, list(left))
+            #print('append left1')
+          }
+        } else {
+          frontier = append(frontier, list(left))
+          #print('append left2')
+        }
+        #frontier = append(frontier, list(left))
       }
       
       if (nrow(trafficMatrix$hroads) >= expand$x) {
         #print("right")
         right <- list(x=expand$x+1, y=expand$y, f=trafficMatrix$hroads[expand$x,expand$y]+expand$f, 
                       h=man_dist(c(expand$x+1,expand$y), goal)*road_con, p=append(expand$p, 6))
-        frontier = append(frontier, list(right))
+        if (length(frontier) != 0) {
+          added = 0
+          for (i in 1:length(frontier)) {
+            if (right$x == frontier[[i]]$x & right$y == frontier[[i]]$y) {
+              if (right$f+right$h < frontier[[i]]$f+frontier[[i]]$h) {
+                frontier[[i]] = right
+                added = 1
+                #print('replace right')
+                break
+              }
+            } 
+          }
+          if (added == 0) {
+            frontier = append(frontier, list(up))
+            #print('append right1')
+          }
+        } else {
+          frontier = append(frontier, list(right))
+          #print('append right2')
+        }
+        #frontier = append(frontier, list(right))
       }
       # print("frontier after added directions:")
       # print(frontier)
