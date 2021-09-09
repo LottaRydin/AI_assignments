@@ -60,19 +60,26 @@ nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
   
   
   while (length(frontier) != 0){
-    print(length(frontier))
+    print(cat("lenght frontier:", length(frontier)))
     # if (length(frontier)>1000){
     #   print(cat("carinfo: ", c(carInfo$x,carInfo$y)))
     #   print(cat("goal: ", goal))
     #   print(cat("expanded coordinats:", c(expand$x,expand$y)))
     # }
     # print("nextMove while")
+    
     path_vals = sapply(frontier, function(i) i[[3]]+i[[4]])
     #best_index = which.min(path_vals) # find index of best frontier
-    #best_index = rev(which(path_vals == min(path_vals)))[1]
-    heu_vals = sapply(frontier, function(i) i[[4]])
-    best_index = which.min(heu_vals[which(path_vals == min(path_vals))])
+    best_index = rev(which(path_vals == min(path_vals)))[1]
     
+    # heu_vals = sapply(frontier, function(i) i[[4]])
+    # print(heu_vals)
+    #best_index = which.min(heu_vals[which.(path_vals == min(path_vals), arr.ind = TRUE)])
+    #print(cat("which(path_vals == min(path_vals)):", which(path_vals == min(path_vals), arr.ind = TRUE)))
+    # best_index = which.min(heu_vals[which.min(path_vals)])
+    # print(cat("which.min(heu_vals[which.min(path_vals, arr.ind = TRUE)]):", which.min(heu_vals[which.min(path_vals)])))
+    # print(cat("best index:", best_index))
+          
     expand = frontier[[best_index]]
     frontier = frontier[-best_index] # Pop best frontier
     #print("expand:")
@@ -82,6 +89,7 @@ nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
     
     if (expand$x == goal[1] & expand$y == goal[2]) {
       # print(cat("goal when return:", goal))
+      
       # print(c(expand$x, expand$y))
       # print(cat("returned value:", expand$p[1]))
       return(expand$p[1])
