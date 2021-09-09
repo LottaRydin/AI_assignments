@@ -50,6 +50,7 @@ man_dist <- function(car_pos, goal_pos) {
 nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
   #print("nextMove")
   road_con <- (mean(trafficMatrix$vroads) + mean(trafficMatrix$hroads))/2
+  grad <- 1
   first_front <- list(x=carInfo$x, y=carInfo$y, f=0, h=man_dist(c(carInfo$x,carInfo$y), goal), p=c())
   frontier <- list(first_front)
   expand <- list()
@@ -96,7 +97,6 @@ nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
       # print(cat("returned value:", expand$p[1]))
       return(expand$p[1])
     } else {
-      grad <- 1
       # print("vroads:")
       # print(trafficMatrix$vroads)
       if (ncol(trafficMatrix$vroads) >= expand$y){
