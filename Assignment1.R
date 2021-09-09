@@ -60,7 +60,7 @@ nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
   
   
   while (length(frontier) != 0){
-    print(cat("lenght frontier:", length(frontier)))
+    #print(cat("lenght frontier:", length(frontier)))
     # if (length(frontier)>1000){
     #   print(cat("carinfo: ", c(carInfo$x,carInfo$y)))
     #   print(cat("goal: ", goal))
@@ -69,9 +69,10 @@ nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
     # print("nextMove while")
     
     path_vals = sapply(frontier, function(i) i[[3]]+i[[4]])
-    #best_index = which.min(path_vals) # find index of best frontier
-    best_index = rev(which(path_vals == min(path_vals)))[1]
+    #best_index = which.min(path_vals) # find index of best frontier (basic)
+    best_index = rev(which(path_vals == min(path_vals)))[1] # reversed algorithm. Best so far.
     
+    ## Algorithm that uses best value from manhattan distance:
     # heu_vals = sapply(frontier, function(i) i[[4]])
     # print(heu_vals)
     #best_index = which.min(heu_vals[which.(path_vals == min(path_vals), arr.ind = TRUE)])
