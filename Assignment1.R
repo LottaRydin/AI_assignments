@@ -43,12 +43,14 @@ nextPickup <- function(trafficMatrix, carInfo, packageMatrix) {
 
 man_dist <- function(car_pos, goal_pos) {
   dis = abs((car_pos[[1]]-goal_pos[[1]])) + abs((car_pos[[2]]-goal_pos[[2]]))
-  return(dis*3)
+  return(dis)
 }
 
 # Find the move to get to carInfo$mem$goal
 nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
   #print("nextMove")
+  road_con <- (mean(trafficMatrix$vroads) + mean(trafficMatrix$hroads))/2
+  road_min <- min(c(min(trafficMatrix$vroads), min(trafficMatrix$hroads)))
   first_front <- list(x=carInfo$x, y=carInfo$y, f=0, h=man_dist(c(carInfo$x,carInfo$y), goal), p=c())
   frontier <- list(first_front)
   expand <- list()
@@ -76,7 +78,7 @@ nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
     #print(path_vals)
     best_path_vals_indices = which(path_vals == min(path_vals))
     #print(best_path_vals)
-    comp_heu_val = heu_vals[which(path_vals == min(path_vals))]
+    comp_heu_val = heu_vals[best_path_vals_indices]
     best_index_compr = which.min(heu_vals[which(path_vals == min(path_vals))])
     best_index = best_path_vals_indices[best_index_compr]
     
@@ -100,28 +102,28 @@ nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
         # print(cat("nrows vroads:", nrow(trafficMatrix$vroads)))
         # print(cat("x an y values for vroads", expand$x, expand$y))
         up <- list(x=expand$x, y=expand$y+1, f=trafficMatrix$vroads[expand$x,expand$y]+expand$f, 
-                   h=man_dist(c(expand$x,expand$y+1), goal), p=append(expand$p, 8))
+                   h=man_dist(c(expand$x,expand$y+1), goal)*road_con, p=append(expand$p, 8))
         frontier = append(frontier, list(up))
       }
       
       if (expand$y != 1) {
         #print("down")
         down <- list(x=expand$x, y=expand$y-1, f=trafficMatrix$vroads[expand$x,expand$y-1]+expand$f, 
-                     h=man_dist(c(expand$x,expand$y-1), goal), p=append(expand$p, 2))
+                     h=man_dist(c(expand$x,expand$y-1), goal)*road_con, p=append(expand$p, 2))
         frontier = append(frontier, list(down))
       }
       
       if (expand$x != 1) {
         #print("left")
         left <- list(x=expand$x-1, y=expand$y, f=trafficMatrix$hroads[expand$x-1,expand$y]+expand$f, 
-                     h=man_dist(c(expand$x-1,expand$y), goal), p=append(expand$p, 4))
+                     h=man_dist(c(expand$x-1,expand$y), goal)*road_con, p=append(expand$p, 4))
         frontier = append(frontier, list(left))
       }
       
       if (nrow(trafficMatrix$hroads) >= expand$x) {
         #print("right")
         right <- list(x=expand$x+1, y=expand$y, f=trafficMatrix$hroads[expand$x,expand$y]+expand$f, 
-                      h=man_dist(c(expand$x+1,expand$y), goal), p=append(expand$p, 6))
+                      h=man_dist(c(expand$x+1,expand$y), goal)*road_con, p=append(expand$p, 6))
         frontier = append(frontier, list(right))
       }
       # print("frontier after added directions:")
