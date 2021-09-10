@@ -40,7 +40,7 @@ man_dist <- function(car_pos, goal_pos) {
 # Find the move to get to carInfo$mem$goal
 nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
 
-  road_con <- (mean(trafficMatrix$vroads) + mean(trafficMatrix$hroads))/2
+  road_con <- min(c(min(trafficMatrix$vroads), min(trafficMatrix$hroads)))
   grad <- 1
   first_front <- list(x=carInfo$x, y=carInfo$y, f=0, h=man_dist(c(carInfo$x,carInfo$y), goal), p=c())
   frontier <- list(first_front)
@@ -52,7 +52,7 @@ nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
   
   
   while (length(frontier) != 0){
-    
+    #print(length(frontier))
     path_vals = sapply(frontier, function(i) i[[3]]+i[[4]])
     best_index = rev(which(path_vals == min(path_vals)))[1] # reversed algorithm. Best so far.
           
@@ -62,28 +62,48 @@ nextMove <- function(trafficMatrix, carInfo, packageMatrix, goal) {
     if (expand$x == goal[1] & expand$y == goal[2]) {
       return(expand$p[1])
     } else {
+      add_front = list()
       if (ncol(trafficMatrix$vroads) >= expand$y){
         up <- list(x=expand$x, y=expand$y+1, f=trafficMatrix$vroads[expand$x,expand$y]+expand$f, 
                    h=man_dist(c(expand$x,expand$y+1), goal)*road_con*grad, p=append(expand$p, 8))
-        frontier = append(frontier, list(up))
+        add_front = append(add_front, list(up))
       }
       
       if (expand$y != 1) {
         down <- list(x=expand$x, y=expand$y-1, f=trafficMatrix$vroads[expand$x,expand$y-1]+expand$f, 
                      h=man_dist(c(expand$x,expand$y-1), goal)*road_con*grad, p=append(expand$p, 2))
-        frontier = append(frontier, list(down))
+        add_front = append(add_front, list(down))
       }
       
       if (expand$x != 1) {
         left <- list(x=expand$x-1, y=expand$y, f=trafficMatrix$hroads[expand$x-1,expand$y]+expand$f, 
                      h=man_dist(c(expand$x-1,expand$y), goal)*road_con*grad, p=append(expand$p, 4))
-        frontier = append(frontier, list(left))
+        add_front = append(add_front, list(left))
       }
       
       if (nrow(trafficMatrix$hroads) >= expand$x) {
         right <- list(x=expand$x+1, y=expand$y, f=trafficMatrix$hroads[expand$x,expand$y]+expand$f, 
                       h=man_dist(c(expand$x+1,expand$y), goal)*road_con*grad, p=append(expand$p, 6))
-        frontier = append(frontier, list(right))
+        add_front = append(add_front, list(right))
+      }
+      for (i in 1:length(add_front)){
+        if (length(frontier) != 0){
+          ex = FALSE
+          for (j in 1:length(frontier)){
+            if (add_front[[i]]$x == frontier[[j]]$x & add_front[[i]]$y == frontier[[j]]$y){
+              ex = TRUE
+              if ((add_front[[i]]$h + add_front[[i]]$f) < (frontier[[j]]$h + frontier[[j]]$f)){
+                frontier[[j]] = add_front[[i]]
+              }
+            break
+            }
+          }
+          if (!ex){
+            frontier = append(frontier, list(add_front[[i]]))
+          }
+        } else {
+          frontier = append(frontier, list(add_front[[i]]))
+        }
       }
     }
   }
